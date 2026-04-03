@@ -3,8 +3,11 @@ import base64
 import json
 import re
 import os
+import io
+import traceback
 import urllib.request
 import urllib.error
+import urllib.parse
 from datetime import date
 
 app = Flask(__name__)
@@ -431,9 +434,9 @@ def rename():
         info = extract_info(pdf_bytes)
         filename = build_filename(info)
     except Exception as e:
+        traceback.print_exc()
         return str(e), 500
 
-    import io
     response = send_file(
         io.BytesIO(pdf_bytes),
         mimetype="application/pdf",
@@ -442,9 +445,6 @@ def rename():
     )
     response.headers["X-Filename"] = urllib.parse.quote(filename)
     return response
-
-
-import urllib.parse
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
